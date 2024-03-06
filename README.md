@@ -11,3 +11,7 @@ Developed by [tensorturtle](https://github.com/tensorturtle), creator of [react-
 ## Dependencies
 + [pytransitions](https://github.com/pytransitions/transitions/tree/master): Python implementation of FSM.
 + [pycycyling](https://github.com/zacharyedwardbull/pycycling): Bleak-based library for reading & controlling cycling-related devices. Used for demonstration.
+
+## Helpful Reading
+
+[pytrainsitions README](https://github.com/pytransitions/transitions/blob/master/README.md) has an excellent follow-along tutorial.
