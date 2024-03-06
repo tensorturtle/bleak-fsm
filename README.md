@@ -4,7 +4,7 @@
 
 However, when incorporating it into a production application with proper state transitions (scanning, reading data, disconnecting, re-scanning.) it provides no guidance.
 
-This library is an opinionated abstraction over Bleak that uses the concept of [Finite State Machines](https://en.wikipedia.org/wiki/Finite-state_machine) to facilitate its use across the full application lifecycle. Use this library to correctly interface with Bluetooth devices instead of trying to reason about it in your head.
+This library is an opinionated abstraction over Bleak that uses the concept of [Finite State Machines](https://en.wikipedia.org/wiki/Finite-state_machine) to facilitate its use across the full application lifecycle. Use this library to correctly interface with Bluetooth devices instead of trying to keep it in your head and doing ad-hoc fixes to invalid states.
 
 Developed by [tensorturtle](https://github.com/tensorturtle), creator of [react-pycycling-demo](https://github.com/tensorturtle/react-pycycling-demo) and major contributor to [pycycling](https://github.com/zacharyedwardbull/pycycling)
 
