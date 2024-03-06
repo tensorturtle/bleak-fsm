@@ -1,0 +1,6 @@
+# For now, we use requirements.txt and system
+# and expect the user to run `pip3 install -r requirements.txt`
+# Later we will transition to poetry in order to publish the package
+
+transitions
+bleak
