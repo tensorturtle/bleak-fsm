@@ -6,6 +6,8 @@ However, it provides no guidance about incorporating it into a production applic
 
 This library is an opinionated abstraction over Bleak that uses the concept of [Finite State Machines](https://en.wikipedia.org/wiki/Finite-state_machine) to facilitate its use across a full user application lifecycle. Use this library to correctly interface with Bluetooth devices instead of trying to keep it in your head and doing ad-hoc fixes to invalid states.
 
+`bleak-fsm` explicitly defines and enforces the following application lifecycle graph:
+
 Developed by [tensorturtle](https://github.com/tensorturtle), creator of [react-pycycling-demo](https://github.com/tensorturtle/react-pycycling-demo) and major contributor to [pycycling](https://github.com/zacharyedwardbull/pycycling)
 
 ## Dependencies
