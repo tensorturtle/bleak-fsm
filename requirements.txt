@@ -1,5 +1,5 @@
-# For now, we use requirements.txt and system
-# and expect the user to run `pip3 install -r requirements.txt`
+# For now, we use requirements.txt and system python
+# and expect the user to run `pip3 install -r requirements.txt`, optionally in a venv.
 # Later we will transition to poetry in order to publish the package
 
 transitions
