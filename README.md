@@ -20,7 +20,7 @@ The following is a non-functioning code snippet that shows how to migrate from v
 <th>`bleak-fsm`</th>
 </tr>
 <tr>
-<td>
+<td style="max-width: 300px;">
 
 ```python
 # Setup
@@ -43,7 +43,7 @@ async with BleakClient(device) as client:
     await client.stop_notify(HEART_RATE_CHARACTERISTIC)
 ```
 </td>
-<td>
+<td style="max-width: 300px;">
     
 ```python
 # Setup
