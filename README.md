@@ -10,33 +10,44 @@ However, it lacks any guidance for incorporating it into a production applicatio
 
 `bleak-fsm` makes it easy to keep track of all state in the same program that actually interfaces with bluetooth. This library is an opinionated abstraction over Bleak that uses the concept of [Finite State Machines](https://en.wikipedia.org/wiki/Finite-state_machine) to make explicit the status of scanned / connected devices across a full user application lifecycle. Basically, `bleak-fsm` defines several possible "states" (such as `Init`, `TargetSet`, `Connected`, `Streaming`) and possible methods to transition between those states (such as `set_target()`, `connect()`, `start_stream()`, `disconnect()`). A `MachineError` is thrown when illegal transition is attempted.
 
-## Examples (incorrect)
+## Migrating from Vanilla Bleak
 
-Code snippets of 'vanilla' `bleak` vs. `bleak-fsm` code:
+The following is a non-functioning code snippet that shows what your `bleak` code would look like after migrating to `bleak-fsm`:
 
-Vanilla `bleak`:
+<table>
+<tr>
+<th>Vanilla Bleak</th>
+<th>Bleak-FSM</th>
+</tr>
+<tr>
+<td>
+    
 ```python
 # Setup
 
 from bleak import BleakClient
 
-HEART_RATE_CHARACTERISTIC="00002a37-0000-1000-8000-00805f9b34fb"
-
 def handle_hr_measurement(sender, data):
     heart_rate = data[1]
     print(f"HR: {heart_rate}")
 
-# Somewhere in your application logic (scanning part not shown)
+# Scanning process not shown
+# Somewhere in your application logic
 
 async with BleakClient(device) as client:
     logger.info("Connected")
 
-    await client.start_notify(HEART_RATE_CHARACTERISTIC, handle_hr_measurement)
+    await client.start_notify(
+        HEART_RATE_CHARACTERISTIC,
+        handle_hr_measurement)
     await asyncio.sleep(5.0)
-    await client.stop_notify(HEART_RATE_CHARACTERISTIC)
+    await client.stop_notify(
+        HEART_RATE_CHARACTERISTIC)
 ```
 
-`bleak-fsm`:
+</td>
+<td>
+    
 ```python
 # Setup
 
@@ -48,11 +59,19 @@ machine.add_model(model)
 def handle_hr_measurement(value):
     print(f"HR: {value}")
 
-model.enable_notifications = lambda client: client.start_notify(HEART_RATE_CHARACTERISTIC, handle_hr_measurement)
+# pass in the same Callable as used in
+# Vanilla Bleak
+model.enable_notifications =
+    lambda client: client.start_notify(
+        HEART_RATE_CHARACTERISTIC,
+        handle_hr_measurement)
 
-model.disable_notifications = lambda client: client.stop_notify(HEART_RATE_CHARACTERISTIC)
+model.disable_notifications =
+    lambda client: client.stop_notify(
+        HEART_RATE_CHARACTERISTIC)
 
-# Somewhere in your application logic (scanning part not shown)
+# Scanning process not shown
+# Somewhere in your application logic
 
 await model.connect()
 print(model.state) # "Connected"
@@ -68,7 +87,13 @@ print(model.state) # "TargetSet"
 
 ```
 
+<<<<<<< HEAD
 You can think of `BleakModel` as representing a given bluetooth adapter, and instances of that class as representing specific bluetooth devices.
+=======
+</td> 
+</tr> 
+</table>
+>>>>>>> 6b05da317dc267eb63358e17224d201ca6665f47
 
 ## Pycycling Compatibility
 
