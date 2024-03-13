@@ -87,13 +87,13 @@ print(model.state) # "TargetSet"
 
 ```
 
-<<<<<<< HEAD
-You can think of `BleakModel` as representing a given bluetooth adapter, and instances of that class as representing specific bluetooth devices.
-=======
+
 </td> 
 </tr> 
 </table>
->>>>>>> 6b05da317dc267eb63358e17224d201ca6665f47
+
+
+You can think of `BleakModel` as representing a given bluetooth adapter, and instances of that class as representing specific bluetooth devices.
 
 ## Pycycling Compatibility
 
