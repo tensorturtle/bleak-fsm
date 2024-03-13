@@ -1,12 +1,14 @@
-# Bleak FSM (Finite State Machine)
+# Bleak-FSM
+
+**A Finite State Machine abstraction over the Bleak Bluetooth library for simplified state management in production Python applications.**
 
 ## Introduction
 
 [Bleak](https://github.com/hbldh/bleak) provides an excellent cross-platform API for connecting to Bluetooth devices using Python. 
 
-However, it lacks any guidance for incorporating it into a production application. More specifically, users of the Bleak library are expected to keep track of the bluetooth connection status for each bluetooth adapter and for each device. This can result in applications storing bluetooth state shared between various components of the frontend and backend. We believe this to be an anti-pattern.
+However, it lacks any guidance for incorporating it into a production application. Developers using the Bleak library are expected to keep track of the bluetooth connection status for each bluetooth adapter and for each device. This can result in applications storing bluetooth state shared between various components of the frontend and backend. We believe this to be an anti-pattern.
 
-`bleak-fsm` keeps all state in the same program that actually interfaces with bluetooth. This library is an opinionated abstraction over Bleak that uses the concept of [Finite State Machines](https://en.wikipedia.org/wiki/Finite-state_machine) to make explicit the status of scanned / connected devices across a full user application lifecycle. Basically, `bleak-fsm` defines several possible "states" (such as `Init`, `TargetSet`, `Connected`, `Streaming`) and possible methods to transition between those states (such as `set_target()`, `connect()`, `start_stream()`, `disconnect()`). A `MachineError` is thrown when illegal transition is attempted.
+`bleak-fsm` makes it easy to keep track of all state in the same program that actually interfaces with bluetooth. This library is an opinionated abstraction over Bleak that uses the concept of [Finite State Machines](https://en.wikipedia.org/wiki/Finite-state_machine) to make explicit the status of scanned / connected devices across a full user application lifecycle. Basically, `bleak-fsm` defines several possible "states" (such as `Init`, `TargetSet`, `Connected`, `Streaming`) and possible methods to transition between those states (such as `set_target()`, `connect()`, `start_stream()`, `disconnect()`). A `MachineError` is thrown when illegal transition is attempted.
 
 ## Examples (incorrect)
 
@@ -14,34 +16,55 @@ Code snippets of 'vanilla' `bleak` vs. `bleak-fsm` code:
 
 Vanilla `bleak`:
 ```python
+# Setup
+
 from bleak import BleakClient
 
-with BleakClient(address) as client:
-    client.start_notify(CHARACTERISTIC_UUID)
-    asyncio.sleep(10)
-    client.stop_notify(CHARACTERISTIC_UUID)
+HEART_RATE_CHARACTERISTIC="00002a37-0000-1000-8000-00805f9b34fb"
+
+def handle_hr_measurement(sender, data):
+    heart_rate = data[1]
+    print(f"HR: {heart_rate}")
+
+# Somewhere in your application logic (scanning part not shown)
+
+async with BleakClient(device) as client:
+    logger.info("Connected")
+
+    await client.start_notify(HEART_RATE_CHARACTERISTIC, handle_hr_measurement)
+    await asyncio.sleep(5.0)
+    await client.stop_notify(HEART_RATE_CHARACTERISTIC)
 ```
 
-`bleak-fsm`
+`bleak-fsm`:
 ```python
-from bleak_fsm import machine, BleakModel
-
 # Setup
+
+from bleak_fsm import machine, BleakModel
 
 model = BleakModel()
 machine.add_model(model)
 
-model.enable_notifications = lambda client: client.start_notify(CHARACTERISTIC_UUID, handle_hr_measurement)
+def handle_hr_measurement(value):
+    print(f"HR: {value}")
 
-model.disable_notifications = lambda client: client.stop_notify(CHARACTERISTIC_UUID)
+model.enable_notifications = lambda client: client.start_notify(HEART_RATE_CHARACTERISTIC, handle_hr_measurement)
 
-# In Application
+model.disable_notifications = lambda client: client.stop_notify(HEART_RATE_CHARACTERISTIC)
+
+# Somewhere in your application logic (scanning part not shown)
 
 await model.connect()
+print(model.state) # "Connected"
 
 await model.stream()
+print(model.state) # "Streaming"
+
+await asyncio.sleep(5)
+print(model.state) # "Streaming"
 
 await model.disonnect()
+print(model.state) # "TargetSet"
 
 ```
 

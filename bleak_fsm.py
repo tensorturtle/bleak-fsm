@@ -40,12 +40,12 @@ class BleakModel:
     '''
     bt_devices = {} # class variable to store the discovered devices, since we can only have one BleakScanner
     _stop_scan_event = asyncio.Event() # class variable to stop the scan
-    def __init__(self, scan_stale_time=120, auto_rescan=True, rescan_timeout=3):
+    def __init__(self, scan_stale_time=120, auto_rescan=True, auto_rescan_timeout=3):
         '''
         Args
             (int) scan_stale_time: number of seconds while scan results are considered valid for establishing connection. Must re-scan if connection attempted after this time.
-            (bool) auto_rescan: If connect() attempted when scan is stale, run scan for `rescan_timeout` seconds
-            (int) rescan_timeout: Number of seconds to scan, if auto_rescan is True. If scan isn't stale, then this value is not used and scan continues indefinitely until you call stop_scan().
+            (bool) auto_rescan: If connect() attempted when scan is stale, run scan for `auto_rescan_timeout` seconds
+            (int) auto_rescan_timeout: Number of seconds to scan, if auto_rescan is True. If scan isn't stale, then this value is not used and scan continues indefinitely until you call stop_scan().
         '''
         self.bleak_client: BleakClient = None
         self.ble_device: BLEDevice = None
@@ -54,7 +54,7 @@ class BleakModel:
 
         self.scan_stale_time = scan_stale_time
         self.auto_rescan = auto_rescan
-        self.rescan_timeout = rescan_timeout
+        self.auto_rescan_timeout = auto_rescan_timeout
 
         self.wrap = lambda client: client  # Callable that sets self.wrapped_client. A callable may return identity for no wrap, or a Pycycling object which wraps a standard client. By default, an identity function.
         self.wrapped_client = None # Either identical to `self.bleak_client` (not wrapped) or custom object that represents the BLE device that presumably takes in a BleakClient, such as pycycling classes
@@ -92,7 +92,7 @@ class BleakModel:
                 if self.auto_rescan:
                     print("Stale scan. Automatically re-scanning before attempting connect")
                     await self._bt_scan()
-                    await asyncio.sleep(self.rescan_timeout)
+                    await asyncio.sleep(self.auto_rescan_timeout)
                     await self._stop_bt_scan()
                     await self._connect_to_device() # while this looks recursive, it isn't because after one iteration, the stale time will not have been reached
                     return True
@@ -213,13 +213,6 @@ machine.add_transition(
     after="_stream_from_device"
 )
 
-# The following two "disconnect" triggers are for
-# Connected -> Init (which is obvious) and
-# Streaming -> Init: After a stream is stopped, we can't go back to Connected
-# because we can't re-use the BleakClient object.
-# Therefore we need to go one more back to Init,
-# then to Connect, and then back to Streaming.
-
 machine.add_transition(
     trigger="disconnect",
     source="Connected",
@@ -227,6 +220,9 @@ machine.add_transition(
     before="_disconnect_from_device"
 )
 
+# After a stream is stopped, we can't go back to Connected
+# because we can't re-use the BleakClient object.
+# Therefore we need to go one more back to TargetSet,
 machine.add_transition(
     trigger="disconnect",
     source="Streaming",
