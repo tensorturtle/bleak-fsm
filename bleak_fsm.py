@@ -40,6 +40,7 @@ class BleakModel:
     '''
     bt_devices = {} # class variable to store the discovered devices, since we can only have one BleakScanner
     _stop_scan_event = asyncio.Event() # class variable to stop the scan
+
     def __init__(self, scan_stale_time=120, auto_rescan=True, auto_rescan_timeout=3):
         '''
         Args
@@ -79,7 +80,7 @@ class BleakModel:
             self.target = address
             return True
         else:
-            return BleakFSMError(f"Address {address} not found in discovered devices")
+            raise BleakFSMError(f"Address {address} not found in discovered devices")
             # recommend resetting wifi if you suspect that the device was improperly connected from this device
 
     def _unset_target(self):

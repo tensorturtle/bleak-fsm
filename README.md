@@ -68,6 +68,8 @@ print(model.state) # "TargetSet"
 
 ```
 
+You can think of `BleakModel` as representing a given bluetooth adapter, and instances of that class as representing specific bluetooth devices.
+
 ## Pycycling Compatibility
 
 `bleak-fsm` is designed to accomodate [`pycycling`](https://github.com/zacharyedwardbull/pycycling).
