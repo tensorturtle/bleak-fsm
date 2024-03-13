@@ -28,20 +28,25 @@ The following is a non-functioning code snippet that shows how to migrate from v
 
 from bleak import BleakClient
 
-HEART_RATE_CHARACTERISTIC="00002a37-0000-1000-8000-00805f9b34fb"
+HEART_RATE_CHARACTERISTIC=
+"00002a37-0000-1000-8000-00805f9b34fb"
 
 def handle_hr_measurement(sender, data):
     heart_rate = data[1]
     print(f"HR: {heart_rate}")
 
-# Somewhere in your application logic (scanning part not shown)
+# Somewhere in your application logic
+(scanning part not shown)
 
 async with BleakClient(device) as client:
     logger.info("Connected")
 
-    await client.start_notify(HEART_RATE_CHARACTERISTIC, handle_hr_measurement)
+    await client.start_notify(
+HEART_RATE_CHARACTERISTIC,
+handle_hr_measurement)
     await asyncio.sleep(5.0)
-    await client.stop_notify(HEART_RATE_CHARACTERISTIC)
+    await client.stop_notify(
+HEART_RATE_CHARACTERISTIC)
 ```
 </div>
 
