@@ -59,6 +59,8 @@ machine.add_model(model)
 def handle_hr_measurement(value):
     print(f"HR: {value}")
 
+# pass in the same Callable as used in
+# Vanilla Bleak
 model.enable_notifications =
     lambda client: client.start_notify(
         HEART_RATE_CHARACTERISTIC,
