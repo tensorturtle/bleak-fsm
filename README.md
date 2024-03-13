@@ -29,6 +29,7 @@ def example1():
 ```
 </td>
 <td>
+    
 ```python
 def example2():
     print("This is example 2")
