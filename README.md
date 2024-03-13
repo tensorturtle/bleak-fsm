@@ -40,12 +40,10 @@ async with BleakClient(device) as client:
 
     await client.start_notify(
         HEART_RATE_CHARACTERISTIC,
-        handle_hr_measurement
-        )
+        handle_hr_measurement)
     await asyncio.sleep(5.0)
     await client.stop_notify(
-        HEART_RATE_CHARACTERISTIC
-        )
+        HEART_RATE_CHARACTERISTIC)
 ```
 </div>
 
@@ -66,13 +64,11 @@ def handle_hr_measurement(value):
 model.enable_notifications =
     lambda client: client.start_notify(
         HEART_RATE_CHARACTERISTIC,
-        handle_hr_measurement
-        )
+        handle_hr_measurement)
 
 model.disable_notifications =
     lambda client: client.stop_notify(
-        HEART_RATE_CHARACTERISTIC
-        )
+        HEART_RATE_CHARACTERISTIC)
 
 # Scanning process not shown
 # Somewhere in your application logic
