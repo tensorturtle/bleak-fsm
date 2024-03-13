@@ -12,7 +12,7 @@ However, it lacks any guidance for incorporating it into a production applicatio
 
 ## Migrating from Vanilla Bleak
 
-The following is a non-functioning code snippet that shows how to migrate from vanilla `bleak` to `bleak-fsm`:
+The following is a non-functioning code snippet that shows what your `bleak` code would look like after migrating to `bleak-fsm`:
 
 <table>
 <tr>
