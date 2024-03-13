@@ -21,7 +21,7 @@ The following is a non-functioning code snippet that shows how to migrate from v
 </tr>
 <tr>
 <td style="max-width: 200px;">
-<pre style="white-space: pre-wrap;">
+<div style="width:100px">
     
 ```python
 # Setup
@@ -43,7 +43,7 @@ async with BleakClient(device) as client:
     await asyncio.sleep(5.0)
     await client.stop_notify(HEART_RATE_CHARACTERISTIC)
 ```
-</pre>
+</div>
 
 </td>
 <td style="max-width: 200px;">
