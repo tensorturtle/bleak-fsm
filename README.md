@@ -28,31 +28,29 @@ The following is a non-functioning code snippet that shows how to migrate from v
 
 from bleak import BleakClient
 
-HEART_RATE_CHARACTERISTIC=
-"00002a37-0000-1000-8000-00805f9b34fb"
-
 def handle_hr_measurement(sender, data):
     heart_rate = data[1]
     print(f"HR: {heart_rate}")
 
+# Scanning process not shown
 # Somewhere in your application logic
-(scanning part not shown)
 
 async with BleakClient(device) as client:
     logger.info("Connected")
 
     await client.start_notify(
-HEART_RATE_CHARACTERISTIC,
-handle_hr_measurement)
+        HEART_RATE_CHARACTERISTIC,
+        handle_hr_measurement
+        )
     await asyncio.sleep(5.0)
     await client.stop_notify(
-HEART_RATE_CHARACTERISTIC)
+        HEART_RATE_CHARACTERISTIC
+        )
 ```
 </div>
 
 </td>
 <td>
-<pre style="white-space: pre-wrap;">
     
 ```python
 # Setup
@@ -65,11 +63,19 @@ machine.add_model(model)
 def handle_hr_measurement(value):
     print(f"HR: {value}")
 
-model.enable_notifications = lambda client: client.start_notify(HEART_RATE_CHARACTERISTIC, handle_hr_measurement)
+model.enable_notifications =
+    lambda client: client.start_notify(
+        HEART_RATE_CHARACTERISTIC,
+        handle_hr_measurement
+        )
 
-model.disable_notifications = lambda client: client.stop_notify(HEART_RATE_CHARACTERISTIC)
+model.disable_notifications =
+    lambda client: client.stop_notify(
+        HEART_RATE_CHARACTERISTIC
+        )
 
-# Somewhere in your application logic (scanning part not shown)
+# Scanning process not shown
+# Somewhere in your application logic
 
 await model.connect()
 print(model.state) # "Connected"
@@ -85,7 +91,6 @@ print(model.state) # "TargetSet"
 
 ```
 
-</pre>
 </td> 
 </tr> 
 </table>
