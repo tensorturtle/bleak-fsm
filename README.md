@@ -16,8 +16,8 @@ The following is a non-functioning code snippet that shows how to migrate from v
 
 <table>
 <tr>
-<th>Example 1</th>
-<th>Example 2</th>
+<th>Vanilla `bleak`</th>
+<th>`bleak-fsm`</th>
 </tr>
 <tr>
 <td>
