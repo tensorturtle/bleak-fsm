@@ -91,13 +91,6 @@ print(model.state) # "TargetSet"
 </tr> 
 </table>
 
-Code snippets of 'vanilla' `bleak` vs. `bleak-fsm` code:
-
-Vanilla `bleak`:
-
-
-`bleak-fsm`:
-
 ## Pycycling Compatibility
 
 `bleak-fsm` is designed to accomodate [`pycycling`](https://github.com/zacharyedwardbull/pycycling).
