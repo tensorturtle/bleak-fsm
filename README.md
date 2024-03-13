@@ -23,26 +23,6 @@ The following is a non-functioning code snippet that shows how to migrate from v
 <td>
 
 ```python
-def example1():
-    print("This is example 1")
-    # Code for example 1
-```
-</td>
-<td>
-    
-```python
-def example2():
-    print("This is example 2")
-    # Code for example 2
-```
-</td> 
-</tr> 
-</table>
-
-Code snippets of 'vanilla' `bleak` vs. `bleak-fsm` code:
-
-Vanilla `bleak`:
-```python
 # Setup
 
 from bleak import BleakClient
@@ -62,8 +42,9 @@ async with BleakClient(device) as client:
     await asyncio.sleep(5.0)
     await client.stop_notify(HEART_RATE_CHARACTERISTIC)
 ```
-
-`bleak-fsm`:
+</td>
+<td>
+    
 ```python
 # Setup
 
@@ -94,6 +75,17 @@ await model.disonnect()
 print(model.state) # "TargetSet"
 
 ```
+
+</td> 
+</tr> 
+</table>
+
+Code snippets of 'vanilla' `bleak` vs. `bleak-fsm` code:
+
+Vanilla `bleak`:
+
+
+`bleak-fsm`:
 
 ## Pycycling Compatibility
 
