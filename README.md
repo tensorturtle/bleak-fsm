@@ -10,7 +10,33 @@ However, it lacks any guidance for incorporating it into a production applicatio
 
 `bleak-fsm` makes it easy to keep track of all state in the same program that actually interfaces with bluetooth. This library is an opinionated abstraction over Bleak that uses the concept of [Finite State Machines](https://en.wikipedia.org/wiki/Finite-state_machine) to make explicit the status of scanned / connected devices across a full user application lifecycle. Basically, `bleak-fsm` defines several possible "states" (such as `Init`, `TargetSet`, `Connected`, `Streaming`) and possible methods to transition between those states (such as `set_target()`, `connect()`, `start_stream()`, `disconnect()`). A `MachineError` is thrown when illegal transition is attempted.
 
-## Examples (incorrect)
+## Migrating from Vanilla Bleak
+
+The following is a non-functioning code snippet that shows how to migrate from vanilla `bleak` to `bleak-fsm`:
+
+<table>
+<tr>
+<th>Example 1</th>
+<th>Example 2</th>
+</tr>
+<tr>
+<td>
+
+```python
+def example1():
+    print("This is example 1")
+    # Code for example 1
+```
+</td>
+<td>
+```python
+def example2():
+    print("This is example 2")
+    # Code for example 2
+```
+</td> 
+</tr> 
+</table>
 
 Code snippets of 'vanilla' `bleak` vs. `bleak-fsm` code:
 
