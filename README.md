@@ -16,12 +16,11 @@ The following is a non-functioning code snippet that shows what your `bleak` cod
 
 <table>
 <tr>
-<th>Vanilla `bleak`</th>
-<th>`bleak-fsm`</th>
+<th>Vanilla Bleak</th>
+<th>Bleak-FSM</th>
 </tr>
 <tr>
 <td>
-<div style="width:100px">
     
 ```python
 # Setup
@@ -45,7 +44,6 @@ async with BleakClient(device) as client:
     await client.stop_notify(
         HEART_RATE_CHARACTERISTIC)
 ```
-</div>
 
 </td>
 <td>
