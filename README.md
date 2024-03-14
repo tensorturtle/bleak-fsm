@@ -118,7 +118,7 @@ print(model.state) # "TargetSet"
 
 ## Pycycling Compatibility
 
-`bleak-fsm` is designed to accomodate [`pycycling`](https://github.com/zacharyedwardbull/pycycling). See `USE_PYCYCLING` variable in the [basic tutorial notebook](examples/single_hr_notebook_example.ipynb)
+`bleak-fsm` is designed to accomodate [`pycycling`](https://github.com/zacharyedwardbull/pycycling). The [basic tutorial notebook](examples/single_hr_notebook_example.ipynb) has parallel examples of using either raw BleakClient or a Pycycling object. 
 
 ## Further Resources & Recommendations
 
