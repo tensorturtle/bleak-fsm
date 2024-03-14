@@ -108,16 +108,13 @@ print(model.state) # "TargetSet"
 </tr> 
 </table>
 
-
-You can think of `BleakModel` as representing a given bluetooth adapter, and instances of that class as representing specific bluetooth devices.
-
 ## Pycycling Compatibility
 
-`bleak-fsm` is designed to accomodate [`pycycling`](https://github.com/zacharyedwardbull/pycycling).
+`bleak-fsm` is designed to accomodate [`pycycling`](https://github.com/zacharyedwardbull/pycycling). 
 
 ## Further Resources & Recommendations
 
-This library uses `async` Python. Familiarize yourself with the basics of async Python before using this library.
+This library uses `async` Python. Familiarize yourself with the basics of async Python before using this library. See `USE_PYCYCLING` variable in the [basic tutorial notebook](single_hr_notebook_example.ipynb)
 
 Read the [`pytransitions` README](https://github.com/pytransitions/transitions/blob/master/README.md) for an excellent follow-along tutorial on Finite State Machines.
 
