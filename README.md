@@ -24,7 +24,9 @@ pip3 install bleak-fsm
 
 ## Quickstart
 
-The best way to get familiar with Bleak-FSM is to step through the [basic Jupyter notebook tutorial](examples/single_hr_notebook_example.ipynb). It uses Heart Rate monitor as an example. For all of these demos, you need to modify the target bluetooth device address/name.
+After installation, you should clone this repository and check out the guides in the [examples](examples/) directory to get familiar with Bleak-FSM.
+
+Start with the [basic Jupyter notebook tutorial](examples/single_hr_notebook_example.ipynb). It uses Heart Rate monitor as an example. For all of these demos, you need to modify the target bluetooth device address/name.
 
 If you don't have one, refer to the [Migration Guide notebook](examples/migration_guide.ipynb) to use your Bluetooth device with Bleak-FSM.
 
