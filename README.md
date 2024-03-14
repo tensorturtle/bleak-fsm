@@ -118,7 +118,7 @@ print(model.state) # "TargetSet"
 
 ## Pycycling Compatibility
 
-`bleak-fsm` is designed to accomodate [`pycycling`](https://github.com/zacharyedwardbull/pycycling). 
+`bleak-fsm` is designed to accomodate [`pycycling`](https://github.com/zacharyedwardbull/pycycling).
 
 ## Further Resources & Recommendations
 
@@ -126,7 +126,7 @@ This library uses `async` Python. Familiarize yourself with the basics of async 
 
 Read the [`pytransitions` README](https://github.com/pytransitions/transitions/blob/master/README.md) for an excellent follow-along tutorial on Finite State Machines.
 
-## `bleak-fsm` in the Wild
+## Bleak-FSM in the Wild
 
 A list of projects that use this library
 
