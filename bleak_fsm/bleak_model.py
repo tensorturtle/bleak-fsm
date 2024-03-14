@@ -1,36 +1,11 @@
 import asyncio
-import time
 import logging
 
-from transitions.extensions.asyncio import AsyncMachine
 from bleak import BleakClient, BleakScanner
 from bleak.backends.device import BLEDevice
 from bleak.backends.scanner import AdvertisementData
-from bleak.exc import BleakError
 
-### Exceptions
-    
-class BleakFSMError(Exception):
-    '''
-    Base class for this library's exceptions.
-    When developers use Bleak FSM, they should only see subclasses of this exception.
-    No other types of exceptions should pass through and be raised.
-    '''
-    pass
-
-class StaleScanError(BleakFSMError):
-    '''
-    Raised when the scan is stale.
-    '''
-    def __init__(self):
-        super().__init__("Scan is stale. Please rescan. Consider setting 'auto_rescan=True' to avoid this error.")
-
-class NoDevicesFoundError(BleakFSMError):
-    '''
-    Raised when no devices are found during a scan.
-    '''
-    def __init__(self):
-        super().__init__("No devices found during scan.")
+from .exc import BleakFSMError, NoDevicesFoundError
 
 class BleakModel:
     '''
@@ -222,57 +197,3 @@ class BleakModel:
         await self._stop_stream_from_device()
         await self._disconnect_from_device()
         return True
-    
-### pytransitions FSM
-    
-transitions = []
-
-model = BleakModel() # import this from user script
-
-machine = AsyncMachine(model, states=["Init", "TargetSet", "Connected", "Streaming"], transitions=transitions, initial='Init')
-
-machine.add_transition(
-    trigger="set_target",
-    source="Init",
-    dest="TargetSet",
-    before="_set_target"
-)
-
-machine.add_transition(
-    trigger="unset_target",
-    source="TargetSet",
-    dest="Init",
-    before="_unset_target"
-)
-
-machine.add_transition(
-    trigger="connect",
-    source="TargetSet",
-    dest="Connected",
-    conditions="_connect_to_device_with_timeout"
-)
-
-machine.add_transition(
-    trigger="stream",
-    source="Connected",
-    dest="Streaming",
-    after="_nonblocking_stream_from_device"
-)
-
-machine.add_transition(
-    trigger="disconnect",
-    source="Connected",
-    dest="TargetSet",
-    before="_disconnect_from_device"
-)
-
-# After a stream is stopped, we can't go back to Connected
-# because we can't re-use the BleakClient object.
-# Therefore we need to go one more back to TargetSet,
-machine.add_transition(
-    trigger="disconnect",
-    source="Streaming",
-    dest="TargetSet",
-    before="_stop_stream_and_disconnect_from_device"
-)
-

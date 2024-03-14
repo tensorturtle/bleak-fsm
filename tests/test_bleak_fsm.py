@@ -1,6 +1,5 @@
 import pytest
 import asyncio
-from unittest.mock import AsyncMock, patch
 import transitions
 from bleak_fsm import machine, BleakModel, NoDevicesFoundError, BleakFSMError  # Replace 'your_module' with the actual name of your Python file
 
