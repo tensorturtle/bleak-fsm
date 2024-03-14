@@ -8,7 +8,23 @@
 
 However, it lacks any guidance for incorporating it into a production application. Developers using the Bleak library are expected to keep track of the bluetooth connection status for each bluetooth adapter and for each device. This can result in applications storing bluetooth state shared between various components of the frontend and backend. We believe this to be an anti-pattern.
 
-`bleak-fsm` makes it easy to keep track of all state in the same program that actually interfaces with bluetooth. This library is an opinionated abstraction over Bleak that uses the concept of [Finite State Machines](https://en.wikipedia.org/wiki/Finite-state_machine) to make explicit the status of scanned / connected devices across a full user application lifecycle. Basically, `bleak-fsm` defines several possible "states" (such as `Init`, `TargetSet`, `Connected`, `Streaming`) and possible methods to transition between those states (such as `set_target()`, `connect()`, `stream()`, `disconnect()`). A `MachineError` is thrown when illegal transition is attempted.
+`bleak-fsm` makes it easy to keep track of all state in the same program that actually interfaces with bluetooth. This library is an opinionated abstraction over Bleak that uses the concept of [Finite State Machines](https://en.wikipedia.org/wiki/Finite-state_machine) to make explicit the status of scanned / connected devices across a full user application lifecycle. Basically, `bleak-fsm` defines several possible "states" ( and possible methods to transition between those states. A `MachineError` is thrown when illegal transition is attempted.
+
+## Concepts
+
+[BleakModel](https://github.com/tensorturtle/bleak-fsm/blob/38c725c7eb501139149cd8cbae22a4eb35e57c33/bleak_fsm.py#L35) represents the bluetooth adapter on your system. This library supports one adapter per program. Scanning operations are executed as class methods on this class.
+
+Instances of BleakModel represents individual BLE devices that you wish to connect to. You may transition between the following states: `Init`, `TargetSet`, `Connected`, `Streaming` using methods: `set_target()`, `connect()`, `stream()`, `disconnect()`. `clean_up()` is a somewhat special method that gracefully transitions instances of BleakModel back to `Init` for whenever exceptions are raised or the program quits.
+
+## Quickstart
+
+The best way to get familiar with Bleak-FSM is to step through the [basic Jupyter notebook tutorial](single_hr_notebook_example.ipynb). It uses Heart Rate monitor as an example. For all of these demos, you need to modify the target bluetooth device address/name.
+
+If you don't have one, refer to the [Migration Guide notebook](migration_guide.ipynb) to use your Bluetooth device with Bleak-FSM.
+
+[dual_notebook_example.ipynb](dual_notebook_example.ipynb) builds on the basic tutorial and demonstrates simultaneous connection to two different Bluetooth devices.
+
+For a regular python script version, see [single_hr_script_example.py](single_hr_script_example.py).
 
 ## Migrating from Vanilla Bleak
 
