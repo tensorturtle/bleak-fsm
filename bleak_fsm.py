@@ -75,7 +75,7 @@ class BleakModel:
         cls._stop_scan_event.set()
         return True
 
-    def __init__(self, logging_level=logging.WARNING):
+    def __init__(self, connection_timeout=5.0, logging_level=logging.WARNING):
         '''
         Args
             (int) scan_stale_time: number of seconds while scan results are considered valid for establishing connection. Must re-scan if connection attempted after this time.
@@ -83,6 +83,8 @@ class BleakModel:
             (int) auto_rescan_timeout: Number of seconds to scan, if auto_rescan is True. If scan isn't stale, then this value is not used and scan continues indefinitely until you call stop_scan().
         '''
         logging.basicConfig(level=logging_level)
+
+        self.connection_timeout = connection_timeout  # seconds
         
         self.bleak_client: BleakClient = None
         self.ble_device: BLEDevice = None
@@ -135,12 +137,12 @@ class BleakModel:
     def _unset_target(self):
         self.target = None
 
-    async def _connect_to_device_with_timeout(self, timeout=5.0):
+    async def _connect_to_device_with_timeout(self):
         '''
         Connect to the device with a timeout (seconds)
         '''
         try:
-            await asyncio.wait_for(self._connect_to_device(), timeout=timeout)
+            await asyncio.wait_for(self._connect_to_device(), timeout=self.connection_timeout)
         except asyncio.TimeoutError:
             logging.warning(f"Timed out while connecting to {self.target}")
             # We must disconnect so that the device is returned to the list of discovered devices
