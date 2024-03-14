@@ -1,4 +1,4 @@
-# Bleak-FSM
+# Bleak-FSM (Work in Progress)
 
 **A Finite State Machine abstraction over the Bleak Bluetooth library for simplified state management in production Python applications.**
 
