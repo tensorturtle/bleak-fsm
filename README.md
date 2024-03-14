@@ -16,15 +16,21 @@ However, it lacks any guidance for incorporating it into a production applicatio
 
 Instances of BleakModel represents individual BLE devices that you wish to connect to. You may transition between the following states: `Init`, `TargetSet`, `Connected`, `Streaming` using methods: `set_target()`, `connect()`, `stream()`, `disconnect()`. `clean_up()` is a somewhat special method that gracefully transitions instances of BleakModel back to `Init` for whenever exceptions are raised or the program quits.
 
+## Installation
+
+```
+pip3 install bleak-fsm
+```
+
 ## Quickstart
 
-The best way to get familiar with Bleak-FSM is to step through the [basic Jupyter notebook tutorial](single_hr_notebook_example.ipynb). It uses Heart Rate monitor as an example. For all of these demos, you need to modify the target bluetooth device address/name.
+The best way to get familiar with Bleak-FSM is to step through the [basic Jupyter notebook tutorial](examples/single_hr_notebook_example.ipynb). It uses Heart Rate monitor as an example. For all of these demos, you need to modify the target bluetooth device address/name.
 
-If you don't have one, refer to the [Migration Guide notebook](migration_guide.ipynb) to use your Bluetooth device with Bleak-FSM.
+If you don't have one, refer to the [Migration Guide notebook](examples/migration_guide.ipynb) to use your Bluetooth device with Bleak-FSM.
 
-[dual_notebook_example.ipynb](dual_notebook_example.ipynb) builds on the basic tutorial and demonstrates simultaneous connection to two different Bluetooth devices.
+[dual_notebook_example.ipynb](examples/dual_notebook_example.ipynb) builds on the basic tutorial and demonstrates simultaneous connection to two different Bluetooth devices.
 
-For a regular python script version, see [single_hr_script_example.py](single_hr_script_example.py).
+For a regular python script version, see [single_hr_script_example.py](examples/single_hr_script_example.py).
 
 ## Migrating from Vanilla Bleak
 
@@ -114,7 +120,7 @@ print(model.state) # "TargetSet"
 
 ## Further Resources & Recommendations
 
-This library uses `async` Python. Familiarize yourself with the basics of async Python before using this library. See `USE_PYCYCLING` variable in the [basic tutorial notebook](single_hr_notebook_example.ipynb)
+This library uses `async` Python. Familiarize yourself with the basics of async Python before using this library. See `USE_PYCYCLING` variable in the [basic tutorial notebook](examples/single_hr_notebook_example.ipynb)
 
 Read the [`pytransitions` README](https://github.com/pytransitions/transitions/blob/master/README.md) for an excellent follow-along tutorial on Finite State Machines.
 
