@@ -14,7 +14,7 @@ machine.add_transition(
     trigger="set_target",
     source="Init",
     dest="TargetSet",
-    before="_set_target"
+    conditions="_set_target"
 )
 
 machine.add_transition(

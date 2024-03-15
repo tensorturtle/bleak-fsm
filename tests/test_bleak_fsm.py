@@ -14,6 +14,13 @@ async def test_scan():
     assert BleakModel.bt_devices
 
 @pytest.mark.asyncio
+async def test_skip_targetset_and_connect_fails():
+    model = BleakModel()
+    machine.add_model(model)
+    with pytest.raises(transitions.core.MachineError):
+        await model.connect()
+
+@pytest.mark.asyncio
 async def test_unset_target_from_targetset_state():
     model = BleakModel()
     machine.add_model(model)
@@ -50,6 +57,13 @@ async def test_set_target_successful():
     await model.set_target('some_address')
     assert model.target == 'some_address'
     assert model.state == "TargetSet"
+
+@pytest.mark.asyncio
+async def test_set_target_failure():
+    model = BleakModel()
+    machine.add_model(model)
+    await model.set_target('non_existent_address')
+    assert model.state == "Init"
 
 @pytest.mark.asyncio
 async def test_clean_up_from_streaming_state():
