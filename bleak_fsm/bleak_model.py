@@ -5,8 +5,6 @@ from bleak import BleakClient, BleakScanner
 from bleak.backends.device import BLEDevice
 from bleak.backends.scanner import AdvertisementData
 
-from .exc import BleakFSMError, NoDevicesFoundError
-
 class BleakModel:
     '''
     This class is a transitions.AsyncModel wrapper around the BleakScanner class.
@@ -87,14 +85,17 @@ class BleakModel:
         return True
 
     def _set_target(self, address):
-        if address in BleakModel.bt_devices.keys():
-            self.target = address
-            return True
-        else:
-            logging.error(f"Address {address} not found in discovered devices")
+        try:
+            if address in BleakModel.bt_devices.keys():
+                self.target = address
+                return True
+            else:
+                logging.error(f"Address {address} not found in discovered devices")
+                return False
+        except:
+            logging.error(f"An error occurred while setting the target")
             return False
-            # recommend resetting wifi if you suspect that the device was improperly connected from this device
-
+        
     def _unset_target(self):
         self.target = None
 
@@ -104,12 +105,13 @@ class BleakModel:
         '''
         try:
             await asyncio.wait_for(self._connect_to_device(), timeout=self.connection_timeout)
+            return True
+
         except asyncio.TimeoutError:
             logging.warning(f"Timed out while connecting to {self.target}")
             # We must disconnect so that the device is returned to the list of discovered devices
             await self._disconnect_from_device()
             return False
-        return True
     async def _connect_to_device(self):
         if len(BleakModel.bt_devices) == 0:
             logging.error("No devices found")
@@ -119,8 +121,9 @@ class BleakModel:
         except:
             logging.error(f"Bluetooth device {self.target} not found in scanned list. It could be powered off, connected to another device, or to another BleakModel.")
             return False
-        self.bleak_client = BleakClient(self.ble_device) # we don't use the async context manager because we want to access the client object from the disconnect function
         try:
+            self.bleak_client = BleakClient(self.ble_device) # we don't use the async context manager because we want to access the client object from the disconnect function
+
             connected = await self.bleak_client.connect()
             if connected:
                 logging.info(f"Connected to {self.target}")
@@ -130,15 +133,20 @@ class BleakModel:
                 return True
             else:
                 logging.warning(f"Failed to connect to {self.target}")
-        except Exception as e:
-            logging.error(f"An error occurred: {e}")
+        except:
+            logging.error(f"An error occurred while connecting to {self.target}")
             return False
         return True
     
     async def _disconnect_from_device(self):
-        BleakModel.bt_devices.update({self.target: (self.ble_device, self.advertisement_data)}) # put it back in the list
-        await self.bleak_client.disconnect()
-        logging.info(f"Disconnected from {self.bleak_client.address}")
+        try:
+            BleakModel.bt_devices.update({self.target: (self.ble_device, self.advertisement_data)}) # put it back in the list
+            await self.bleak_client.disconnect()
+            logging.info(f"Disconnected from {self.target}")
+            return True
+        except:
+            logging.error(f"An error occurred while disconnecting.")
+            return False
 
     async def _nonblocking_stream_from_device(self):
         '''
@@ -149,13 +157,12 @@ class BleakModel:
         return True
 
     async def _stream_from_device(self):
-        self._stop_streaming_event.clear()
-
-        self.set_measurement_handler(self.wrapped_client)
         try:
+            self._stop_streaming_event.clear()
+            self.set_measurement_handler(self.wrapped_client)
             await self.enable_notifications(self.wrapped_client)
-        except Exception as e:
-            logging.error(f"An error occurred while enabling notifications: {e}")
+        except:
+            logging.error(f"An error occurred while enabling notifications")
             return False
         
         logging.info("Started streaming")
@@ -167,14 +174,12 @@ class BleakModel:
         raise NotImplementedError("Todo: Implement this method")
 
     async def _stop_stream_from_device(self):
-        self._stop_streaming_event.set()
         try:
+            self._stop_streaming_event.set()
             await self.disable_notifications(self.wrapped_client)
-
             logging.info("Stopped streaming")
             return True
-        except Exception as e:
-            logging.error(f"An error occurred while stopping streaming: {e}")
+        except:
             return False
 
     async def _stop_stream_and_disconnect_from_device(self):
@@ -185,7 +190,8 @@ class BleakModel:
         '''
         try:
             await self._stop_stream_from_device()
-        except Exception as e:
-            logging.warning(f"An error occurred while stopping streaming: {e}. Continuing to disconnect from device.")
-        await self._disconnect_from_device()
-        return True
+            await self._disconnect_from_device()
+            return True
+        except:
+            logging.warning(f"An error occurred while stopping streaming. Continuing to disconnect from device.")
+            return False

@@ -116,6 +116,14 @@ print(model.state) # "TargetSet"
 </tr> 
 </table>
 
+## Error Handling
+
+The methods of `BleakModel` do not raise Exceptions, and only return True or False.
+The Finite State Machine `machine` uses that Boolean to determine if transition is successful or not.
+
+Therefore, for you, the worst case scenario is that the transition fails.
+Runtime exceptions are never thrown.
+
 ## Pycycling Compatibility
 
 `bleak-fsm` is designed to accomodate [`pycycling`](https://github.com/zacharyedwardbull/pycycling). The [basic tutorial notebook](examples/single_hr_notebook_example.ipynb) has parallel examples of using either raw BleakClient or a Pycycling object. 

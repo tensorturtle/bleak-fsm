@@ -7,6 +7,9 @@ model = BleakModel() # import this from user script
 
 machine = AsyncMachine(model, states=["Init", "TargetSet", "Connected", "Streaming"], transitions=transitions, initial='Init')
 
+# "trigger" is the name of the method that you call on the model.
+# "before"/"after"/"conditions" are the methods of BleakModel instance that will be called at the transition. Find it in `bleak_model.py`
+
 machine.add_transition(
     trigger="set_target",
     source="Init",
