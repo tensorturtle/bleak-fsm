@@ -15,7 +15,7 @@ logger = logging.getLogger("bleak_fsm_demo")
 # filter out asyncio log messages
 logging.getLogger('transitions.extensions.asyncio').setLevel(logging.WARN)
 
-from bleak_fsm import machine, BleakModel, BleakFSMError
+from bleak_fsm import machine, BleakModel
 from pycycling.heart_rate_service import HeartRateService
 
 def handle_hr_measurement(value):
@@ -29,7 +29,8 @@ async def main(model, target_name: str):
         await asyncio.sleep(5.0)
         await BleakModel.stop_scan()
         if len(BleakModel.bt_devices) == 0:
-            raise BleakFSMError("No devices found.")
+            logger.error("No devices found. Exiting")
+            return
         logger.info("Scan stopped")
         logger.debug("Discovered devices:")
         logger.debug(BleakModel.bt_devices)

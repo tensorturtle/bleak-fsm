@@ -1662,6 +1662,20 @@ files = [
 ]
 
 [[package]]
+name = "pycycling"
+version = "0.3.4"
+description = "A Python package for interacting with Bluetooth Low Energy (BLE) compatible bike trainers, power meters, radars and heart rate monitors"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pycycling-0.3.4-py3-none-any.whl", hash = "sha256:3ecd97c533f896bd1a87d9a2b21c0ff3a098cae7194ca661824ec92f1f638380"},
+    {file = "pycycling-0.3.4.tar.gz", hash = "sha256:92f1eddbe17fa3ccf806135845954ea8d893a15fcf13a3a258de61f174b81e92"},
+]
+
+[package.dependencies]
+bleak = "*"
+
+[[package]]
 name = "pygments"
 version = "2.17.2"
 description = "Pygments is a syntax highlighting package written in Python."
@@ -2781,4 +2795,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.13"
-content-hash = "2139075b0f74ae2b882b805d56e97f7d0e888bda8d4bc0ffa8a6218e9d67d7de"
+content-hash = "5555bcd10bc8720f597fb12cb13ef239b105f00ba6264b209d12f4354868cf69"
