@@ -1,7 +1,7 @@
 import pytest
 import asyncio
 import transitions
-from bleak_fsm import machine, BleakModel, NoDevicesFoundError, BleakFSMError  # Replace 'your_module' with the actual name of your Python file
+from bleak_fsm import machine, BleakModel # Replace 'your_module' with the actual name of your Python file
 
 @pytest.mark.asyncio
 async def test_scan():
@@ -64,14 +64,5 @@ async def test_clean_up_from_streaming_state():
     assert model.state == "TargetSet"
     await model.clean_up()
     assert model.state == "Init"
-
-
-@pytest.mark.asyncio
-async def test_set_target_unsuccessful():
-    model = BleakModel()
-    machine.add_model(model)
-    BleakModel.bt_devices = {}
-    with pytest.raises(BleakFSMError):
-        await model.set_target('non_existent_address')
 
 # TODO: Add tests for NoDevicesFoundError

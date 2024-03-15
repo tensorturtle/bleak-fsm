@@ -18,8 +18,21 @@ class BleakModel:
     Instead, return True if the method was successful, and False if it was not.
     The user of the state machine is responsible for dealing with transitions that weren't successful.
     '''
+    instances = [] # class variable to store all instances of BleakModel, for easy cleanup
+
     bt_devices = {} # class variable to store the discovered devices, since we can only have one BleakScanner
     _stop_scan_event = asyncio.Event() # class variable to stop the scan
+
+
+    @classmethod
+    async def clean_up_all(cls):
+        '''
+        Go to Init state from all states for all instances of BleakModel.
+        Call when handling exceptions or when program is exiting.
+        '''
+        for instance in cls.instances:
+            await instance.clean_up()
+        return True
 
     @classmethod
     async def _start_scan(cls):
@@ -69,6 +82,8 @@ class BleakModel:
         self.set_measurement_handler = None  # a Callable must be set later that takes in a BleakClient or similar (Pycycling) object and a value
         self.disable_notifications = None # an Async Callable must be set later that takes in a BleakClient or similar (Pycycling) object
 
+        BleakModel.instances.append(self)
+
     async def clean_up(self):
         '''
         Go to Init state from all states. Call when handling exceptions or when program is exiting.
@@ -104,8 +119,7 @@ class BleakModel:
         Connect to the device with a timeout (seconds)
         '''
         try:
-            await asyncio.wait_for(self._connect_to_device(), timeout=self.connection_timeout)
-            return True
+            return await asyncio.wait_for(self._connect_to_device(), timeout=self.connection_timeout)
 
         except asyncio.TimeoutError:
             logging.warning(f"Timed out while connecting to {self.target}")
