@@ -15,6 +15,10 @@ class BleakModel:
 
     Many of this class's methods are meant to be state machine callbacks, 
     so they are prefixed with an underscore to prevent accidentally calling them directly.
+
+    Methods that are called by the state machine must not raise exceptions.
+    Instead, return True if the method was successful, and False if it was not.
+    The user of the state machine is responsible for dealing with transitions that weren't successful.
     '''
     bt_devices = {} # class variable to store the discovered devices, since we can only have one BleakScanner
     _stop_scan_event = asyncio.Event() # class variable to stop the scan
@@ -51,12 +55,6 @@ class BleakModel:
         return True
 
     def __init__(self, connection_timeout=5.0, logging_level=logging.WARNING):
-        '''
-        Args
-            (int) scan_stale_time: number of seconds while scan results are considered valid for establishing connection. Must re-scan if connection attempted after this time.
-            (bool) auto_rescan: If connect() attempted when scan is stale, run scan for `auto_rescan_timeout` seconds
-            (int) auto_rescan_timeout: Number of seconds to scan, if auto_rescan is True. If scan isn't stale, then this value is not used and scan continues indefinitely until you call stop_scan().
-        '''
         logging.basicConfig(level=logging_level)
 
         self.connection_timeout = connection_timeout  # seconds
@@ -73,32 +71,19 @@ class BleakModel:
         self.set_measurement_handler = None  # a Callable must be set later that takes in a BleakClient or similar (Pycycling) object and a value
         self.disable_notifications = None # an Async Callable must be set later that takes in a BleakClient or similar (Pycycling) object
 
-        self.last_scan_time = None
-
     async def clean_up(self):
         '''
         Go to Init state from all states. Call when handling exceptions or when program is exiting.
         '''
-        self._stop_scan_event.set()
         self._stop_streaming_event.set()
 
+        # Fail early if procedure fails
         if self.state == "Streaming":
-            await self.disconnect()
+            if not await self.disconnect(): return False
         if self.state == "Connected":
-            await self.disconnect()
-        if self.state == "Scanning":
-            await self.stop_scan()
+            if not await self.disconnect(): return False
         if self.state == "TargetSet":
-            await self.unset_target()
-        return True
-    async def _nonblocking_start_scan(self):
-        '''
-        Run _start_scan in a detached coroutine.
-        Allowing users to `await model.start_scan()` without blocking.
-        '''
-        loop = asyncio.get_event_loop()
-        loop.set_exception_handler(lambda loop, context: logging.error(f"Exception: {context.get('exception')}"))
-        asyncio.create_task(self._start_scan())
+            if not await self.unset_target(): return False
         return True
 
     def _set_target(self, address):
@@ -106,7 +91,8 @@ class BleakModel:
             self.target = address
             return True
         else:
-            raise BleakFSMError(f"Address {address} not found in discovered devices")
+            logging.error(f"Address {address} not found in discovered devices")
+            return False
             # recommend resetting wifi if you suspect that the device was improperly connected from this device
 
     def _unset_target(self):
@@ -124,14 +110,15 @@ class BleakModel:
             await self._disconnect_from_device()
             return False
         return True
-
     async def _connect_to_device(self):
         if len(BleakModel.bt_devices) == 0:
-            raise NoDevicesFoundError()
+            logging.error("No devices found")
+            return False
         try:
             self.ble_device, self.advertisement_data = (BleakModel.bt_devices.pop(self.target))# remove the device from the list to avoid connecting to it multiple times
         except:
-            raise BleakFSMError(f"Bluetooth device {self.target} not found in scanned list. It could be powered off, connected to another device, or to another BleakModel.")
+            logging.error(f"Bluetooth device {self.target} not found in scanned list. It could be powered off, connected to another device, or to another BleakModel.")
+            return False
         self.bleak_client = BleakClient(self.ble_device) # we don't use the async context manager because we want to access the client object from the disconnect function
         try:
             connected = await self.bleak_client.connect()
@@ -165,7 +152,11 @@ class BleakModel:
         self._stop_streaming_event.clear()
 
         self.set_measurement_handler(self.wrapped_client)
-        await self.enable_notifications(self.wrapped_client)
+        try:
+            await self.enable_notifications(self.wrapped_client)
+        except Exception as e:
+            logging.error(f"An error occurred while enabling notifications: {e}")
+            return False
         
         logging.info("Started streaming")
 
@@ -173,8 +164,6 @@ class BleakModel:
         return True
     
     async def send_command(self, command):
-        if self.state != "Streaming":
-            raise BleakFSMError("Cannot send command while not streaming")
         raise NotImplementedError("Todo: Implement this method")
 
     async def _stop_stream_from_device(self):
@@ -194,6 +183,9 @@ class BleakModel:
         we bundle the stop streaming and disconnect logic
         so that the state jumps from Streaming to Init.
         '''
-        await self._stop_stream_from_device()
+        try:
+            await self._stop_stream_from_device()
+        except Exception as e:
+            logging.warning(f"An error occurred while stopping streaming: {e}. Continuing to disconnect from device.")
         await self._disconnect_from_device()
         return True

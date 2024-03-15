@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bleak-fsm"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Finite State Machine abstraction over the Bleak Bluetooth library for simplified state management in production Python applications."
 authors = ["tensorturtle <tensorturtle@gmail.com>"]
 license = "MIT"
