@@ -16,9 +16,9 @@ However, it lacks any guidance for incorporating it into a production applicatio
 
 As a rule, transitions may fail but no runtime exceptions are raised. In other words, the worst that can happen is that the state didn't change, even when you told it to. 
 
-You are responsible for detecting failed transitions by checking either:
-1. The return value (boolean) of the transition function. E.g. `successful = await model.connect(); assert successful`
-2. Or, checking the state of the model after the attempted transition: `await model.connect(); assert model.state=="Connected"`
+You are responsible for detecting failed transitions by:
+1. Checking the return value (boolean) of the transition function. E.g. `successful = await model.connect(); assert successful`
+2. Or, by checking the state of the model after the attempted transition: `await model.connect(); assert model.state=="Connected"`
 
 If you fail to do the above, a `MachineError` is thrown when illegal transition is attempted.
 
