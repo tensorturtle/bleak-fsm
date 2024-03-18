@@ -72,3 +72,27 @@ async def test_clean_up_from_streaming_state():
     assert model.state == "TargetSet"
     await model.clean_up()
     assert model.state == "Init"
+
+### Context Manager ###
+    
+@pytest.mark.asyncio
+async def test_context_manager_from_targetset():
+    model = BleakModel()
+    BleakModel.bt_devices = {'some_address': ('device', 'advertisement_data')}
+    async with model:
+        await model.set_target('some_address')
+        assert model.state == "TargetSet"
+    assert model.state == "Init"
+    
+@pytest.mark.asyncio
+async def test_context_manager_from_failed_connected():
+    model = BleakModel()
+    BleakModel.bt_devices = {'some_address': ('device', 'advertisement_data')}
+    async with model:
+        await model.set_target('some_address') 
+        should_fail = await model.connect() # since 'some_address' isn't real, should fail.
+        assert not should_fail
+        assert model.state == "TargetSet" 
+    assert model.state == "Init"
+
+# Since we can't go further than "TargetSet" state, we can't test the context manager from "Connected" or "Streaming" state.
