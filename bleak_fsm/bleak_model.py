@@ -116,7 +116,9 @@ class BleakModel:
             trigger="stream",
             source="Connected",
             dest="Streaming",
-            after="_nonblocking_stream_from_device"
+            # potentially check if the measurement handler is set in a 'condition'.
+            conditions="_setup_stream",
+            after="_nonblocking_stream"
         )
 
         self.machine.add_transition(
@@ -158,20 +160,22 @@ class BleakModel:
 
         BleakModel.instances.append(self)
 
-
     async def clean_up(self):
-        '''
-        Go to Init state from all states. Call when handling exceptions or when program is exiting.
-        '''
+        logging.info(f"Cleaning up")
         self._stop_streaming_event.set()
 
-        # Fail early if procedure fails
-        if self.state == "Streaming":
-            if not await self.disconnect(): return False
-        if self.state == "Connected":
-            if not await self.disconnect(): return False
-        if self.state == "TargetSet":
-            if not await self.unset_target(): return False
+        try:
+            if self.state == "Streaming":
+                await self.disconnect()
+            if self.state == "Connected":
+                await self.disconnect()
+            if self.state == "TargetSet":
+                await self.unset_target()
+        except Exception as e:
+            logging.error(f"An error occurred during cleanup: {str(e)}")
+            raise e
+           #return False
+
         return True
 
     def _set_target(self, address):
@@ -201,6 +205,7 @@ class BleakModel:
             # We must disconnect so that the device is returned to the list of discovered devices
             await self._disconnect_from_device()
             return False
+
     async def _connect_to_device(self):
         if len(BleakModel.bt_devices) == 0:
             logging.error("No devices found")
@@ -236,28 +241,24 @@ class BleakModel:
         except:
             logging.error(f"An error occurred while disconnecting.")
             return False
-
-    async def _nonblocking_stream_from_device(self):
-        '''
-        Run _stream_from_device in a detached coroutine.
-        Allowing users to `await model.stream()` without blocking.
-        '''
-        asyncio.create_task(self._stream_from_device())
-        return True
-
-    async def _stream_from_device(self):
+        
+    async def _setup_stream(self):
         try:
             self._stop_streaming_event.clear()
             self.set_measurement_handler(self.wrapped_client)
             await self.enable_notifications(self.wrapped_client)
+            return True
         except:
-            logging.error(f"An error occurred while enabling notifications")
+            logging.error(f"An error occurred while setting up the stream.\nDouble-check that the enable_notifications and set_measurement_handler methods are set, and that they take in a BleakClient or similar (Pycycling) object.")
             return False
-        
-        logging.info("Started streaming")
 
-        await self._stop_streaming_event.wait()
-        return True
+    async def _nonblocking_stream(self):
+        '''
+        Run _stream_from_device in a detached coroutine.
+        Allowing users to `await model.stream()` without blocking.
+        '''
+        asyncio.create_task(self._stop_streaming_event.wait())
+        return True # we can't know at this early return point whether it was successful or not, so just say yes.
     
     async def send_command(self, command):
         raise NotImplementedError("Todo: Implement this method")

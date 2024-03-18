@@ -96,3 +96,10 @@ async def test_context_manager_from_failed_connected():
     assert model.state == "Init"
 
 # Since we can't go further than "TargetSet" state, we can't test the context manager from "Connected" or "Streaming" state.
+    
+# Test idea:
+# If user doesn't set the proper callbacks (model.enable_notifications, model.disable_notifications, model.set_measurement_handler)
+# Then `await model.stream()` should fail, returning False
+# and the state shouldn't have changed (should be Connected)
+# This is a regression test that is currently untestable because
+# we never actually connect to a real device.
