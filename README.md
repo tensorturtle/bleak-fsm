@@ -22,7 +22,7 @@ You are responsible for detecting failed transitions by:
 
 If you fail to do the above, a `MachineError` may be thrown to prevent illegal transition attempts.
 
-Instances of `BleakModel` represents individual BLE devices that you wish to connect to. You may transition between the following states: `Init`, `TargetSet`, `Connected`, `Streaming` using methods: `set_target()`, `connect()`, `stream()`, `disconnect()`. `clean_up()` is a somewhat special method that gracefully transitions instances of BleakModel back to `Init` for whenever exceptions are raised or the program quits.
+Instances of `BleakModel` represents individual BLE devices that you wish to connect to. You may transition between the following states: `Init`, `TargetSet`, `Connected`, and `Streaming` using methods: `set_target()`, `connect()`, `stream()`, `disconnect()`, and `unset_target`. The `clean_up()` method can be used as a shortcut to transition instances of BleakModel in any state back to `Init` for whenever exceptions are raised or the program quits.
 
 ## Installation
 
