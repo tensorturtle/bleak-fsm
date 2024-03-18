@@ -1,7 +1,7 @@
 import pytest
 import asyncio
 import transitions
-from bleak_fsm import machine, BleakModel # Replace 'your_module' with the actual name of your Python file
+from bleak_fsm import BleakModel # Replace 'your_module' with the actual name of your Python file
 
 @pytest.mark.asyncio
 async def test_scan():
@@ -15,13 +15,13 @@ async def test_scan():
 
 @pytest.mark.asyncio
 async def test_skip_targetset_and_connect_fails():
-    model = BleakModel(machine)
+    model = BleakModel()
     with pytest.raises(transitions.core.MachineError):
         await model.connect()
 
 @pytest.mark.asyncio
 async def test_unset_target_from_targetset_state():
-    model = BleakModel(machine)
+    model = BleakModel()
     # Manually put a mock device into the scanned devices list
     BleakModel.bt_devices = {'some_address': ('device', 'advertisement_data')}
     await model.set_target('some_address')
@@ -30,7 +30,7 @@ async def test_unset_target_from_targetset_state():
 
 @pytest.mark.asyncio
 async def test_unset_target_from_init_state():
-    model = BleakModel(machine)
+    model = BleakModel()
     #machine.add_model(model)
     with pytest.raises(transitions.core.MachineError):
         # Since no target was set, state is "Init". We can't unset a target from "Init" state, we must be in "TargetSet" state.
@@ -38,7 +38,7 @@ async def test_unset_target_from_init_state():
 
 @pytest.mark.asyncio
 async def test_clean_up_from_targetset_state():
-    model = BleakModel(machine, connection_timeout=0.2)
+    model = BleakModel(connection_timeout=0.2)
     BleakModel.bt_devices = {'some_address': ('device', 'advertisement_data')}
     await model.set_target('some_address')
     assert model.state == "TargetSet"
@@ -48,7 +48,7 @@ async def test_clean_up_from_targetset_state():
 
 @pytest.mark.asyncio
 async def test_set_target_successful():
-    model = BleakModel(machine)
+    model = BleakModel()
     BleakModel.bt_devices = {'some_address': ('device', 'advertisement_data')}
     await model.set_target('some_address')
     assert model.target == 'some_address'
@@ -56,13 +56,13 @@ async def test_set_target_successful():
 
 @pytest.mark.asyncio
 async def test_set_target_failure():
-    model = BleakModel(machine)
+    model = BleakModel()
     await model.set_target('non_existent_address')
     assert model.state == "Init"
 
 @pytest.mark.asyncio
 async def test_clean_up_from_streaming_state():
-    model = BleakModel(machine)
+    model = BleakModel()
     BleakModel.bt_devices = {'some_address': ('device', 'advertisement_data')}
     await model.set_target('some_address')
     assert model.state == "TargetSet"

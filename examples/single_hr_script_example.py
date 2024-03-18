@@ -15,7 +15,7 @@ logger = logging.getLogger("bleak_fsm_demo")
 # filter out asyncio log messages
 logging.getLogger('transitions.extensions.asyncio').setLevel(logging.WARN)
 
-from bleak_fsm import machine, BleakModel
+from bleak_fsm import BleakModel
 from pycycling.heart_rate_service import HeartRateService
 
 def handle_hr_measurement(value):
@@ -57,7 +57,6 @@ async def main(model, target_name: str):
 
 if __name__ == "__main__":
     model = BleakModel(logging_level=logging.DEBUG)
-    machine.add_model(model)
 
     model.wrap = lambda client: HeartRateService(client)
     model.enable_notifications = lambda client: client.enable_hr_measurement_notifications()
