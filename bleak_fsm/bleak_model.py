@@ -26,7 +26,19 @@ class BleakModel:
 
     bt_devices = {} # class variable to store the discovered devices, since we can only have one BleakScanner
     _stop_scan_event = asyncio.Event() # class variable to stop the scan
-
+    
+    async def __aenter__(self):
+        '''
+        Entering the `async with` context manager. Does nothing.
+        '''
+        pass
+    
+    async def __aexit__(self, *args):
+        '''
+        Exiting the `async with` context manager. Cleans up.
+        '''
+        await self.clean_up()
+    
     @classmethod
     async def clean_up_all(cls):
         '''
