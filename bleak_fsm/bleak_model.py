@@ -27,7 +27,6 @@ class BleakModel:
     bt_devices = {} # class variable to store the discovered devices, since we can only have one BleakScanner
     _stop_scan_event = asyncio.Event() # class variable to stop the scan
 
-
     @classmethod
     async def clean_up_all(cls):
         '''
@@ -68,9 +67,67 @@ class BleakModel:
         '''
         cls._stop_scan_event.set()
         return True
+    
+    def _setup_state_machine(self):
+        '''
+        Initialize the state machine.
+        '''
+        states = ["Init", "TargetSet", "Connected", "Streaming"]
 
-    def __init__(self, machine: AsyncMachine, connection_timeout=5.0, logging_level=logging.WARNING):
+        self.machine = AsyncMachine(
+            model=self, 
+            states=states, 
+            initial='Init'
+            )
+        self.machine.add_transition(
+            trigger="set_target",
+            source="Init",
+            dest="TargetSet",
+            conditions="_set_target"
+        )
+
+        self.machine.add_transition(
+            trigger="unset_target",
+            source="TargetSet",
+            dest="Init",
+            before="_unset_target"
+        )
+
+        self.machine.add_transition(
+            trigger="connect",
+            source="TargetSet",
+            dest="Connected",
+            conditions="_connect_to_device_with_timeout"
+        )
+
+        self.machine.add_transition(
+            trigger="stream",
+            source="Connected",
+            dest="Streaming",
+            after="_nonblocking_stream_from_device"
+        )
+
+        self.machine.add_transition(
+            trigger="disconnect",
+            source="Connected",
+            dest="TargetSet",
+            before="_disconnect_from_device"
+        )
+
+        # After a stream is stopped, we can't go back to Connected
+        # because we can't re-use the BleakClient object.
+        # Therefore we need to go one more back to TargetSet,
+        self.machine.add_transition(
+            trigger="disconnect",
+            source="Streaming",
+            dest="TargetSet",
+            before="_stop_stream_and_disconnect_from_device"
+        )
+
+    def __init__(self, connection_timeout=5.0, logging_level=logging.WARNING):
         logging.basicConfig(level=logging_level)
+
+        self._setup_state_machine()
 
         self.connection_timeout = connection_timeout  # seconds
         
@@ -86,8 +143,6 @@ class BleakModel:
         self.set_measurement_handler = None  # a Callable must be set later that takes in a BleakClient or similar (Pycycling) object and a value
         self.disable_notifications = None # an Async Callable must be set later that takes in a BleakClient or similar (Pycycling) object
 
-        if machine:
-            machine.add_model(self)
 
         BleakModel.instances.append(self)
 
