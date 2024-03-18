@@ -140,7 +140,7 @@ Clone this repository and check out the guides in the [examples](examples/) dire
 
 Start with the [basic Jupyter notebook tutorial](examples/single_hr_notebook_example.ipynb). It uses Heart Rate monitor as an example. For all of these demos, you need to modify the target bluetooth device address/name.
 
-If you don't have a device with heart rates service, refer to the [Migration Guide notebook](examples/migration_guide.ipynb) to use your Bluetooth device with Bleak-FSM.
+If you don't have a device with heart rate service, refer to the [Migration Guide notebook](examples/migration_guide.ipynb) to use your Bluetooth device with Bleak-FSM.
 
 [dual_notebook_example.ipynb](examples/dual_notebook_example.ipynb) builds on the basic tutorial and demonstrates simultaneous connection to two different Bluetooth devices.
 
