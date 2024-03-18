@@ -30,6 +30,8 @@ Instances of `BleakModel` represents individual BLE devices that you wish to con
 pip3 install bleak-fsm
 ```
 
+Bleak-FSM is compatible with Python versions 3.8 to 3.12. See [pyproject.toml](pyproject.toml)
+
 ## Quickstart
 
 Bleak-FSM is designed for use within Python scripts. Nevertheless, the following demonstration uses the Python REPL:
