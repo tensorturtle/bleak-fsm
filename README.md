@@ -41,7 +41,7 @@ From your command line, start the interactive Python interpeter:
 python3 # or python, depending on OS and installation.
 ```
 
-All following commands are to be copy-pasted into the interactive python interpreter after `>>>`.
+All following commands are to be copy-pasted into the Python REPL, after `>>>`.
 
 ```python
 from bleak_fsm import BleakModel
