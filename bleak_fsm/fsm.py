@@ -1,11 +1,7 @@
 from .bleak_model import BleakModel
 from transitions.extensions.asyncio import AsyncMachine
 
-transitions = []
-
-model = BleakModel() # import this from user script
-
-machine = AsyncMachine(model, states=["Init", "TargetSet", "Connected", "Streaming"], transitions=transitions, initial='Init')
+machine = AsyncMachine(BleakModel(), states=["Init", "TargetSet", "Connected", "Streaming"], transitions=[], initial='Init')
 
 # "trigger" is the name of the method that you call on the model.
 # "before"/"after"/"conditions" are the methods of BleakModel instance that will be called at the transition. Find it in `bleak_model.py`

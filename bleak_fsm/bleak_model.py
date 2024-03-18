@@ -2,6 +2,10 @@ import asyncio
 import logging
 
 from bleak import BleakClient, BleakScanner
+
+# typing
+# typing
+from transitions.extensions.asyncio import AsyncMachine
 from bleak.backends.device import BLEDevice
 from bleak.backends.scanner import AdvertisementData
 
@@ -65,7 +69,7 @@ class BleakModel:
         cls._stop_scan_event.set()
         return True
 
-    def __init__(self, connection_timeout=5.0, logging_level=logging.WARNING):
+    def __init__(self, machine: AsyncMachine, connection_timeout=5.0, logging_level=logging.WARNING):
         logging.basicConfig(level=logging_level)
 
         self.connection_timeout = connection_timeout  # seconds
@@ -82,7 +86,11 @@ class BleakModel:
         self.set_measurement_handler = None  # a Callable must be set later that takes in a BleakClient or similar (Pycycling) object and a value
         self.disable_notifications = None # an Async Callable must be set later that takes in a BleakClient or similar (Pycycling) object
 
+        if machine:
+            machine.add_model(self)
+
         BleakModel.instances.append(self)
+
 
     async def clean_up(self):
         '''
