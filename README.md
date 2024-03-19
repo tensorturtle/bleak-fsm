@@ -60,7 +60,7 @@ Start scan
 loop.run_until_complete(BleakModel.start_scan())
 ```
 
-Here, we use `asyncio.run()`, but typically you would `await BleakModel.start_scan()` inside a pre-existing async function.
+Here, we use `loop.run_until_complete()`, but typically you would `await BleakModel.start_scan()` inside a pre-existing async function.
 
 Wait for a few seconds for the scan to find some devices.
 
