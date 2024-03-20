@@ -64,11 +64,11 @@ if __name__ == "__main__":
     model.set_measurement_handler = lambda client: client.set_hr_measurement_handler(handle_hr_measurement)
 
     try:
-        asyncio.get_event_loop().run_until_complete(main(
+        asyncio.new_event_loop().run_until_complete(main(
             model=model,
             target_name="WHOOPDEDOO" # Replace with the name of your heart rate device
         ))
     except KeyboardInterrupt: # must be caught at this top level
-        asyncio.get_event_loop().run_until_complete(model.clean_up())
+        asyncio.new_event_loop().run_until_complete(model.clean_up())
         assert model.state == "Init", "State should be 'Init' after clean_up()"
         logger.error("\nExiting due to keyboard interrupt (CTRL+C)")

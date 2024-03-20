@@ -151,11 +151,13 @@ class BleakModel:
         self.target = None
         self._stop_streaming_event = asyncio.Event()
 
+        self.wrapped_client = None # Set within the program. Either identical to `self.bleak_client` (not wrapped) or custom object that represents the BLE device that presumably takes in a BleakClient, such as pycycling classes
+
+        # Must be defined 
         self.wrap = lambda client: client  # Callable that sets self.wrapped_client. A callable may return identity for no wrap, or a Pycycling object which wraps a standard client. By default, an identity function.
-        self.wrapped_client = None # Either identical to `self.bleak_client` (not wrapped) or custom object that represents the BLE device that presumably takes in a BleakClient, such as pycycling classes
         self.enable_notifications = None # an Async Callable must be set later that takes in a BleakClient or similar (Pycycling) object
-        self.set_measurement_handler = None  # a Callable must be set later that takes in a BleakClient or similar (Pycycling) object and a value
         self.disable_notifications = None # an Async Callable must be set later that takes in a BleakClient or similar (Pycycling) object
+        self.set_measurement_handler = None  # a Callable must be set later that takes in a BleakClient or similar (Pycycling) object and a value
 
 
         BleakModel.instances.append(self)
@@ -245,7 +247,9 @@ class BleakModel:
     async def _setup_stream(self):
         try:
             self._stop_streaming_event.clear()
-            self.set_measurement_handler(self.wrapped_client)
+            if not isinstance(self.wrapped_client, BleakClient):
+                logging.info(f"Wrapped client is not a BleakClient object. Assuming it's a Pycycling object and calling `set_measurement_handler`.")
+                self.set_measurement_handler(self.wrapped_client)
             await self.enable_notifications(self.wrapped_client)
             return True
         except:
