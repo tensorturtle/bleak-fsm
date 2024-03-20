@@ -265,5 +265,5 @@ Read the [`pytransitions` README](https://github.com/pytransitions/transitions/b
 
 A list of projects that use this library
 
-+ [react-pycycling-demo](https://github.com/tensorturtle/react-pycycling-demo)
++ [react-pycycling-demo](https://github.com/tensorturtle/react-pycycling-demo) - currently private, will be made public soon.
 + (Your Project Here) - let me know via Github issues or tensorturtle@gmail.com
