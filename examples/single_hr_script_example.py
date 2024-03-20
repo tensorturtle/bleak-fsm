@@ -1,26 +1,27 @@
-# single_hr_script_example.py
-#
-# This is a Python script equivalent of `single_hr_example.ipynb` Jupyter notebook.
-# It streams the heart rate measurement from a Bluetooth Low Energy (BLE) heart rate device.
-# The major difference is that this script demonstrates how to handle CTRL+C signal
-# So that Bluetooth connection is properly closed before the script exits.
+"""
+This is a Python script equivalent of `single_hr_example.ipynb` Jupyter notebook.
+It streams the heart rate measurement from a Bluetooth Low Energy (BLE) heart rate device.
+The major difference is that this script demonstrates how to handle CTRL+C signal
+So that Bluetooth connection is properly closed before the script exits.
+"""
 
 import asyncio
 import logging
+from bleak_fsm import BleakModel
+from pycycling.heart_rate_service import HeartRateService
 
 logging.basicConfig(level=logging.INFO)
 
 logger = logging.getLogger("bleak_fsm_demo")
 
 # filter out asyncio log messages
-logging.getLogger('transitions.extensions.asyncio').setLevel(logging.WARN)
+logging.getLogger("transitions.extensions.asyncio").setLevel(logging.WARN)
 
-from bleak_fsm import BleakModel
-from pycycling.heart_rate_service import HeartRateService
 
 def handle_hr_measurement(value):
     logger.debug("Using Pycycling wrapper around BleakClient")
     print(f"Heart Rate: {value}")
+
 
 async def main(model, target_name: str):
     try:
@@ -36,7 +37,7 @@ async def main(model, target_name: str):
         logger.debug(BleakModel.bt_devices)
         logger.info(f"Connecting to device named {target_name}")
         target_address = ""
-        for address, (ble_device, advertisement_data) in BleakModel.bt_devices.items():
+        for address, (ble_device, _advertisement_data) in BleakModel.bt_devices.items():
             if ble_device.name == target_name:
                 target_address = address
                 logger.info(f"Found {target_name} at {target_address}")
@@ -55,20 +56,30 @@ async def main(model, target_name: str):
         logger.debug(model.state)
         logger.error("Exiting due to error")
 
+
 if __name__ == "__main__":
     model = BleakModel(logging_level=logging.DEBUG)
 
     model.wrap = lambda client: HeartRateService(client)
-    model.enable_notifications = lambda client: client.enable_hr_measurement_notifications()
-    model.disable_notifications = lambda client: client.disable_hr_measurement_notifications()
-    model.set_measurement_handler = lambda client: client.set_hr_measurement_handler(handle_hr_measurement)
+    model.enable_notifications = (
+        lambda client: client.enable_hr_measurement_notifications()
+    )
+    model.disable_notifications = (
+        lambda client: client.disable_hr_measurement_notifications()
+    )
+    # We use lambda because it needs to be evaluated at runtime to get the correct handle_hr_measurement function
+    model.set_measurement_handler = lambda client: client.set_hr_measurement_handler(
+        handle_hr_measurement
+    )
 
     try:
-        asyncio.new_event_loop().run_until_complete(main(
-            model=model,
-            target_name="WHOOPDEDOO" # Replace with the name of your heart rate device
-        ))
-    except KeyboardInterrupt: # must be caught at this top level
+        asyncio.new_event_loop().run_until_complete(
+            main(
+                model=model,
+                target_name="WHOOPDEDOO",  # Replace with the name of your heart rate device
+            )
+        )
+    except KeyboardInterrupt:  # must be caught at this top level
         asyncio.new_event_loop().run_until_complete(model.clean_up())
         assert model.state == "Init", "State should be 'Init' after clean_up()"
         logger.error("\nExiting due to keyboard interrupt (CTRL+C)")
