@@ -16,7 +16,7 @@ This library inherits all of the cross-platform compatibility of Bleak, supporti
 
 `BleakModel`(found in [bleak_model.py](bleak_fsm/bleak_model.py)) represents the bluetooth adapter on your system. This library supports one adapter per program. It follows that scanning is a class method of the `BleakModel`, like so: `await BleakModel.start_scan()`. You must scan before setting the connection targets for instances of the `BleakModel` class.
 
-As a rule, transitions may fail but no runtime exceptions are raised. In other words, the worst that can happen is that the state didn't change, even when you told it to. 
+As a rule, transitions may fail but no runtime exceptions are raised. In other words, the worst that can happen is that the state didn't change, so you must re-try.
 
 You are responsible for detecting failed transitions by:
 1. Checking the return value (boolean) of the transition function. E.g. `successful = await model.connect(); assert successful`
